@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+.sidebar {
+  min-height: 100vh;
+  background-color: #173122;
+  color: white;
+}
+
+.sidebar-link {
+  color: #adb5bd;
+  display: block;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.sidebar-link:hover {
+  color: #fff;
+  background-color: #343a40;
+}
