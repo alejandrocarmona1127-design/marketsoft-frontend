@@ -12,7 +12,6 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/users" element={<UsersPage />} />
-          {/* Dejamos listas las rutas de proveedores y ventas para después */}
           <Route path="/providers" element={<div><h2>Gestión de Proveedores</h2><p>En construcción...</p></div>} />
           <Route path="/sales" element={<div><h2>Gestión de Ventas</h2><p>En construcción...</p></div>} />
         </Routes>
