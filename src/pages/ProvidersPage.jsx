@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import providerService from '../services/provider.service'
-import '../styles/products.css' 
 
 function ProvidersPage() {
   const [providers, setProviders] = useState([])
 
- 
   const [formData, setFormData] = useState({
       name: '',
       email: '',
@@ -14,7 +12,6 @@ function ProvidersPage() {
   })
 
   const [selectedProvider, setSelectedProvider] = useState(null)
-
   const [isCreateOpenModal, setIsCreateOpenModal] = useState(false)
   const [isEditOpenModal, setIsEditOpenModal] = useState(false)
 
@@ -40,7 +37,6 @@ function ProvidersPage() {
   }, [])
 
   const openCreateModal = () =>{
-     
       setFormData({
           name: '',
           email: '',
@@ -53,7 +49,6 @@ function ProvidersPage() {
 
   const openEditModal = (provider) =>{
     setSelectedProvider(provider)
-    
     setFormData({
         name: provider.name,
         email: provider.email,
@@ -100,117 +95,129 @@ function ProvidersPage() {
   }
 
   return (
-    <section className="products-page">
-      <header className="products-header">
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <p className="products-eyebrow">Inventory</p>
-          <h2>Providers</h2>
+          <span className="text-muted text-uppercase small fw-bold">Inventory</span>
+          <h2 className="mb-0">Providers</h2>
         </div>
-        <button className="products-button products-button-primary" type="button" onClick={openCreateModal}>
-          Create Provider
+        <button className="btn btn-primary shadow-sm" type="button" onClick={openCreateModal}>
+          + Create Provider
         </button>
-      </header>
+      </div>
 
-      <div className="products-table-wrap">
-      <table className="products-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-             <th>City</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {providers.map((provider) => (
-            <tr key={provider.id}>
-              <td>{provider.name}</td>
-              <td>{provider.email}</td>
-              <td>{provider.phone}</td>
-              <td>{provider.city}</td>
-              <td>
-                <div className="products-actions">
-                <button className="products-button products-button-edit" type="button" onClick={() => openEditModal(provider)}>
-                  Edit
-                </button>
-                <button className="products-button products-button-delete" type="button" onClick={() => handleDeleteProvider(provider.id)}>
-                  Delete
-                </button>
-                </div>
-              </td>
+      <div className="table-responsive shadow-sm rounded">
+        <table className="table table-striped table-hover mb-0 align-middle">
+          <thead className="table-dark">
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th className="text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(providers || []).map((provider) => (
+              <tr key={provider.id}>
+                <td className="fw-semibold">{provider.name}</td>
+                <td>{provider.email}</td>
+                <td>{provider.phone}</td>
+                <td>
+                  <span className="badge bg-secondary">{provider.city}</span>
+                </td>
+                <td className="text-center">
+                  <button className="btn btn-sm btn-outline-primary me-2" type="button" onClick={() => openEditModal(provider)}>
+                    Edit
+                  </button>
+                  <button className="btn btn-sm btn-outline-danger" type="button" onClick={() => handleDeleteProvider(provider.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {isCreateOpenModal && (
-        <div className="products-modal-backdrop">
-        <div className="products-modal" role="dialog" aria-modal="true">
-          <div className="products-modal-heading">
-            <p className="products-eyebrow">New item</p>
-            <h3>Create Provider</h3>
-          </div>
-          <form className="products-form" onSubmit={handleSubmitCreate}>
-            <label className="products-field">
-              Name
-              <input className="products-input" name="name" value={formData.name} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              Email
-              <input className="products-input" name="email" type="email" value={formData.email} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              Phone
-              <input className="products-input" name="phone" value={formData.phone} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              City
-              <input className="products-input" name="city" value={formData.city} onChange={handleChange} required />
-            </label>
-            <div className="products-modal-actions">
-              <button className="products-button products-button-secondary" type="button" onClick={closeCreateModal}>Cancel</button>
-              <button className="products-button products-button-primary" type="submit">Create Provider</button>
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Create Provider</h5>
+                <button type="button" className="btn-close" onClick={closeCreateModal}></button>
+              </div>
+              <div className="modal-body">
+                <form id="createProviderForm" onSubmit={handleSubmitCreate}>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Name</label>
+                    <input className="form-control" name="name" value={formData.name} onChange={handleChange} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Email</label>
+                    <input className="form-control" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label className="form-label fw-bold">Phone</label>
+                      <input className="form-control" name="phone" value={formData.phone} onChange={handleChange} required />
+                    </div>
+                    <div className="col">
+                      <label className="form-label fw-bold">City</label>
+                      <input className="form-control" name="city" value={formData.city} onChange={handleChange} required />
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeCreateModal}>Cancel</button>
+                <button type="submit" form="createProviderForm" className="btn btn-primary">Create Provider</button>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
         </div>
       )}
 
       {isEditOpenModal && (
-        <div className="products-modal-backdrop">
-        <div className="products-modal" role="dialog" aria-modal="true">
-          <div className="products-modal-heading">
-            <p className="products-eyebrow">Provider details</p>
-            <h3>Edit Provider</h3>
-          </div>
-          <form className="products-form" onSubmit={handleSubmitUpdate}>
-            <label className="products-field">
-              Name
-              <input className="products-input" name="name" value={formData.name} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              Email
-              <input className="products-input" name="email" type="email" value={formData.email} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              Phone
-              <input className="products-input" name="phone" value={formData.phone} onChange={handleChange} required />
-            </label>
-            <label className="products-field">
-              City
-              <input className="products-input" name="city" value={formData.city} onChange={handleChange} required />
-            </label>
-            <div className="products-modal-actions">
-              <button className="products-button products-button-secondary" type="button" onClick={closeEditModal}>Cancel</button>
-              <button className="products-button products-button-primary" type="submit">Update</button>
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Provider</h5>
+                <button type="button" className="btn-close" onClick={closeEditModal}></button>
+              </div>
+              <div className="modal-body">
+                <form id="editProviderForm" onSubmit={handleSubmitUpdate}>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Name</label>
+                    <input className="form-control" name="name" value={formData.name} onChange={handleChange} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Email</label>
+                    <input className="form-control" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label className="form-label fw-bold">Phone</label>
+                      <input className="form-control" name="phone" value={formData.phone} onChange={handleChange} required />
+                    </div>
+                    <div className="col">
+                      <label className="form-label fw-bold">City</label>
+                      <input className="form-control" name="city" value={formData.city} onChange={handleChange} required />
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeEditModal}>Cancel</button>
+                <button type="submit" form="editProviderForm" className="btn btn-primary">Update</button>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
 import UsersPage from './pages/UsersPage.jsx';
 import ProvidersPage from './pages/ProvidersPage.jsx';
+import SalesPage from './pages/SalesPage.jsx';
+
 
 function App() {
   return (
@@ -14,7 +16,7 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/providers" element={<ProvidersPage />} />
-          <Route path="/sales" element={<div><h2>Gestión de Ventas</h2><p>En construcción...</p></div>} />
+          <Route path="/sales" element={<SalesPage />} />
         </Routes>
       </MainLayout>
     </Router>

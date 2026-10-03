@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import productService from '../services/product.service'
-import '../styles/products.css'
 
 function ProductsPage() {
   const [products, setProducts] = useState([])
 
- 
   const [formData, setFormData] = useState({
       name: '',
       description: '',
@@ -15,9 +13,7 @@ function ProductsPage() {
   })
 
   const [selectedProduct, setSelectedProduct] = useState(null)
-
   const [isCreateOpenModal, setIsCreateOpenModal] = useState(false)
-  const [isViewOpenModal, setIsViewOpenModal] = useState(false)
   const [isEditOpenModal, setIsEditOpenModal] = useState(false)
 
   useEffect(()=> {
@@ -30,7 +26,7 @@ function ProductsPage() {
       }
     }
     fetchProducts()
-  },  [])
+  }, [])
 
   const loadProducts = useCallback(async () => {
       try{
@@ -39,10 +35,9 @@ function ProductsPage() {
       }catch(error){
           console.error('error fetching product', error)
       }
-  },  [])
+  }, [])
 
   const openCreateModal = () =>{
-     
       setFormData({
           name: '',
           description: '',
@@ -51,14 +46,11 @@ function ProductsPage() {
           providerId: ''
       })
       setIsCreateOpenModal(true)
-      setIsViewOpenModal(false)
       setIsEditOpenModal(false)
   }
 
-  const openEdithModal = (product) =>{
+  const openEditModal = (product) =>{
     setSelectedProduct(product)
-
-    
     setFormData({
         name: product.name,
         description: product.description,
@@ -66,23 +58,15 @@ function ProductsPage() {
         stock: product.stock,
         providerId: product.providerId
     })
-
     setIsCreateOpenModal(false)
-    setIsViewOpenModal(false)
     setIsEditOpenModal(true)
   }
 
-  const closeCreateModal = () =>{
-    setIsCreateOpenModal(false)
-  }
-
-  const closeEditModal = () =>{
-    setIsEditOpenModal(false)
-  }
+  const closeCreateModal = () => setIsCreateOpenModal(false)
+  const closeEditModal = () => setIsEditOpenModal(false)
 
   const handleCreateProduct = (event) =>{
     const { name, value} = event.target
-
     setFormData((prevData) => ({
         ...prevData, 
         [name]: value
@@ -91,7 +75,6 @@ function ProductsPage() {
 
   const handleUpdate = (event) =>{
     const { name, value} = event.target
-
     setFormData((prevData) =>({
         ...prevData,
         [name]:value
@@ -100,8 +83,6 @@ function ProductsPage() {
 
   const handleSubmitCreate = async (event) =>{
       event.preventDefault()
-
-     
       await productService.createProduct({
           name: formData.name,
           description: formData.description,
@@ -115,7 +96,6 @@ function ProductsPage() {
 
   const handleSubmitUpdate = async (event) =>{
     event.preventDefault()
-
     await productService.updateProduct(
         selectedProduct.id, 
         {
@@ -134,139 +114,154 @@ function ProductsPage() {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
     )
-    if(!confirmDelete){
-      return
-    }
+    if(!confirmDelete) return
+    
     await productService.deleteProduct(id)
     await loadProducts()
   }
 
   return (
-    <section className="products-page">
-      <header className="products-header">
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <p className="products-eyebrow">Inventory</p>
-          <h2>Products</h2>
+          <span className="text-muted text-uppercase small fw-bold">Inventory</span>
+          <h2 className="mb-0">Products</h2>
         </div>
-        <button className="products-button products-button-primary" type="button" onClick={openCreateModal}>
-          Create Product
+        <button className="btn btn-primary shadow-sm" type="button" onClick={openCreateModal}>
+          + Create Product
         </button>
-      </header>
+      </div>
 
-      <div className="products-table-wrap">
-      <table className="products-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            {/* Agregamos las columnas a la tabla */}
-            <th>Stock</th>
-            <th>Provider ID</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.name}</td>
-              <td>{product.description}</td>
-              <td>{product.price}</td>
-              {/* Mostramos los datos en la tabla */}
-              <td>{product.stock}</td>
-              <td>{product.providerId}</td>
-              <td>
-                <div className="products-actions">
-                <button className="products-button products-button-edit" type="button" onClick={() => openEdithModal(product)}>
-                  Edit
-                </button>
-                <button className="products-button products-button-delete" type="button" onClick={() => handleDeleteProduct(product.id)}>
-                  Delete
-                </button>
-                </div>
-              </td>
+      <div className="table-responsive shadow-sm rounded">
+        <table className="table table-striped table-hover mb-0 align-middle">
+          <thead className="table-dark">
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Provider ID</th>
+              <th className="text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(products || []).map((product) => (
+              <tr key={product.id}>
+                <td className="fw-semibold">{product.name}</td>
+                <td>{product.description}</td>
+                <td>${product.price}</td>
+                <td>
+                  <span className={`badge ${product.stock > 10 ? 'bg-success' : 'bg-danger'}`}>
+                    {product.stock}
+                  </span>
+                </td>
+                <td>{product.providerId}</td>
+                <td className="text-center">
+                  <button className="btn btn-sm btn-outline-primary me-2" type="button" onClick={() => openEditModal(product)}>
+                    Edit
+                  </button>
+                  <button className="btn btn-sm btn-outline-danger" type="button" onClick={() => handleDeleteProduct(product.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {isCreateOpenModal && (
-        <div className="products-modal-backdrop">
-        <div className="products-modal" role="dialog" aria-modal="true" aria-labelledby="create-product-title">
-          <div className="products-modal-heading">
-            <p className="products-eyebrow">New item</p>
-            <h3 id="create-product-title">Create Product</h3>
-          </div>
-          <form className="products-form" onSubmit={handleSubmitCreate}>
-            <label className="products-field">
-              Name
-              <input className="products-input" name="name" value={formData.name} onChange={handleCreateProduct} required />
-            </label>
-            <label className="products-field">
-              Description
-              <input className="products-input" name="description" value={formData.description} onChange={handleCreateProduct} required />
-            </label>
-            <label className="products-field">
-              Price
-              <input className="products-input" name="price" type="number" value={formData.price} onChange={handleCreateProduct} required />
-            </label>
-            {/* Nuevos Inputs para Stock y Provider */}
-            <label className="products-field">
-              Stock
-              <input className="products-input" name="stock" type="number" value={formData.stock} onChange={handleCreateProduct} required />
-            </label>
-            <label className="products-field">
-              Provider ID
-              <input className="products-input" name="providerId" type="number" value={formData.providerId} onChange={handleCreateProduct} required />
-            </label>
-            <div className="products-modal-actions">
-              <button className="products-button products-button-secondary" type="button" onClick={closeCreateModal}>Cancel</button>
-              <button className="products-button products-button-primary" type="submit">Create Product</button>
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Create Product</h5>
+                <button type="button" className="btn-close" onClick={closeCreateModal}></button>
+              </div>
+              <div className="modal-body">
+                <form id="createForm" onSubmit={handleSubmitCreate}>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Name</label>
+                    <input className="form-control" name="name" value={formData.name} onChange={handleCreateProduct} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Description</label>
+                    <input className="form-control" name="description" value={formData.description} onChange={handleCreateProduct} required />
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label className="form-label fw-bold">Price</label>
+                      <div className="input-group">
+                        <span className="input-group-text">$</span>
+                        <input className="form-control" name="price" type="number" step="0.01" value={formData.price} onChange={handleCreateProduct} required />
+                      </div>
+                    </div>
+                    <div className="col">
+                      <label className="form-label fw-bold">Stock</label>
+                      <input className="form-control" name="stock" type="number" value={formData.stock} onChange={handleCreateProduct} required />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Provider ID</label>
+                    <input className="form-control" name="providerId" type="number" value={formData.providerId} onChange={handleCreateProduct} required />
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeCreateModal}>Cancel</button>
+                <button type="submit" form="createForm" className="btn btn-primary">Create Product</button>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
         </div>
       )}
 
       {isEditOpenModal && (
-        <div className="products-modal-backdrop">
-        <div className="products-modal" role="dialog" aria-modal="true" aria-labelledby="edit-product-title">
-          <div className="products-modal-heading">
-            <p className="products-eyebrow">Product details</p>
-            <h3 id="edit-product-title">Edit Product</h3>
-          </div>
-          <form className="products-form" onSubmit={handleSubmitUpdate}>
-            <label className="products-field">
-              Name
-              <input className="products-input" name="name" value={formData.name} onChange={handleUpdate} required />
-            </label>
-            <label className="products-field">
-              Description
-              <input className="products-input" name="description" value={formData.description} onChange={handleUpdate} required />
-            </label>
-            <label className="products-field">
-              Price
-              <input className="products-input" name="price" type="number" value={formData.price} onChange={handleUpdate} required />
-            </label>
-            {/* Nuevos Inputs para Stock y Provider */}
-            <label className="products-field">
-              Stock
-              <input className="products-input" name="stock" type="number" value={formData.stock} onChange={handleUpdate} required />
-            </label>
-            <label className="products-field">
-              Provider ID
-              <input className="products-input" name="providerId" type="number" value={formData.providerId} onChange={handleUpdate} required />
-            </label>
-            <div className="products-modal-actions">
-              <button className="products-button products-button-secondary" type="button" onClick={closeEditModal}>Cancel</button>
-              <button className="products-button products-button-primary" type="submit">Update</button>
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Product</h5>
+                <button type="button" className="btn-close" onClick={closeEditModal}></button>
+              </div>
+              <div className="modal-body">
+                <form id="editForm" onSubmit={handleSubmitUpdate}>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Name</label>
+                    <input className="form-control" name="name" value={formData.name} onChange={handleUpdate} required />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Description</label>
+                    <input className="form-control" name="description" value={formData.description} onChange={handleUpdate} required />
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label className="form-label fw-bold">Price</label>
+                      <div className="input-group">
+                        <span className="input-group-text">$</span>
+                        <input className="form-control" name="price" type="number" step="0.01" value={formData.price} onChange={handleUpdate} required />
+                      </div>
+                    </div>
+                    <div className="col">
+                      <label className="form-label fw-bold">Stock</label>
+                      <input className="form-control" name="stock" type="number" value={formData.stock} onChange={handleUpdate} required />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Provider ID</label>
+                    <input className="form-control" name="providerId" type="number" value={formData.providerId} onChange={handleUpdate} required />
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeEditModal}>Cancel</button>
+                <button type="submit" form="editForm" className="btn btn-primary">Update</button>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 
